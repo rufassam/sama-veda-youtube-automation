@@ -1,0 +1,30 @@
+name: Sama Veda YouTube
+
+on:
+  schedule:
+    - cron: "0 9 * * *"   # runs every day at 9 AM UTC
+  workflow_dispatch:       # allows manual run
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout files
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          pip install pillow google-auth-oauthlib google-api-python-client
+
+      - name: Build video + upload
+        run: |
+          python video_maker.py
+          python youtube_upload.py
